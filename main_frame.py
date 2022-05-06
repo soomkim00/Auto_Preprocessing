@@ -18,7 +18,8 @@ def getDataname():
     data = pd.read_csv(data_name)
     df = pd.DataFrame(data)
     cols = list(df.columns)
-    tree = ttk.Treeview(root)
+    tableView = Tk()
+    tree = ttk.Treeview(tableView)
     tree.pack()
     tree["columns"] = cols
     for i in cols:

@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 
 #출력옵션
