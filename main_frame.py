@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter.ttk as ttk
+from unicodedata import category
 from read_csv import *
 
 root = Tk()
@@ -30,9 +31,76 @@ def getDataname():
         tree.insert("",0,text=index,values=list(row))
 
 
-selectData = Button(root, text = "select", command = getDataname)
+selectData = Button(root, text = "Select", command = getDataname)
 selectData.pack()
 
+
+def ToDataclean():
+    
+
+    nextbtn.destroy()
+    selectData.destroy()
+    combobox.destroy()
+    
+    category_1 = ["결측치 처리", "이상치 처리"] 
+    method_1 = ["해당 데이터 삭제", "평균값 적용"]
+    method_2 = ["구간화 적용", "군집화 적용"]
+    global my_category
+    global my_method
+    combobox_clean_category = ttk.Combobox(root, height=5, values=category_1)
+    combobox_clean_category.pack()
+
+    def category_clean_select() :
+        my_category = combobox_clean_category.get()
+        print(my_category)
+        
+        if(my_category == "결측치 처리") :
+            method_missing_value_select()  
+        if(my_category == "이상치 처리") :
+            method_noisy_value_select()
+        else :
+            pass
+    def method_missing_value_select():
+        combobox_clean_method = ttk.Combobox(root, height=5, values=method_1)
+        combobox_clean_category.destroy()
+        category_btn.destroy()
+        combobox_clean_method.pack()
+        method_btn_1 = Button(root, text = "Select" )#, command = 결측치 처리 함수 연결)
+        method_btn_1.pack()
+
+
+    def method_noisy_value_select():
+        combobox_clean_method = ttk.Combobox(root, height=5, values=method_2)
+        combobox_clean_category.destroy()
+        category_btn.destroy()
+        combobox_clean_method.pack()
+        method_btn_2 = Button(root, text = "Select") #, command = 이상치 처리 함수 연결)
+        method_btn_2.pack()
+
+
+    
+    category_btn = Button(root, text = "Select", command = category_clean_select)
+    category_btn.pack()
+    
+
+def ToDataintergration() :
+
+    nextbtn = Button(root, text = "Next", command = ToDataReduction)
+    print("ToDataintergration")
+    
+
+def ToDataReduction():
+
+    nextbtn = Button(root, text = "Next", command = ToDatatransformation)
+    print("ToDataReduction")
+
+def ToDatatransformation():
+
+    nextbtn = Button(root, text = "Next", command = ToDataintergration)
+    print("ToDatatransformation")
+
+nextbtn = Button(root, text = "Next", command = ToDataclean)
+nextbtn.pack()
 
 
 
@@ -42,5 +110,8 @@ def show_table(data):
         print(data_name)
         
 #show_table(data)
+#page1
+
+
 root.mainloop()
 
