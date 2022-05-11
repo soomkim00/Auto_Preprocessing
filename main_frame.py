@@ -2,6 +2,7 @@ from tkinter import *
 import tkinter.ttk as ttk
 from unicodedata import category
 from read_csv import *
+import pandas as pd
 
 import tkinter as tk
 from tkinter import ttk
@@ -82,7 +83,7 @@ class StartPage(tk.Frame):
         combobox.current(0)
         combobox.grid(row = 2, column = 2)
         def getDataname():
-            global data_name, data, df
+            global data_name, data, df, cols
             data_name = combobox.get()
             data = pd.read_csv(data_name)
             df = pd.DataFrame(data)
@@ -129,19 +130,34 @@ class Page1(tk.Frame):
         button2 = ttk.Button(self, text ="Next",
                             command = lambda : controller.show_frame(Page2))
         button2.grid(row = 7, column = 7, padx = 10, pady = 10)
-       
+
+    
+        #label_1 = ttk.Label(self, text ="{}".format(cols[0]))
+        #label_1.grid(row = 1, column = 0, padx = 10, pady = 10)
+        label_2 = ttk.Label(self, text ="column_2")
+        label_2.grid(row = 2, column = 0, padx = 10, pady = 10)
+        label_3 = ttk.Label(self, text ="column_3")
+        label_3.grid(row = 3, column = 0, padx = 10, pady = 10)
+        label_4 = ttk.Label(self, text ="column_4")
+        label_4.grid(row = 4, column = 0, padx = 10, pady = 10)
+
         global category_1
         global method_1
-        
+        global method_2
+ 
         category_1 = ["결측치 처리", "이상치 처리"] 
         method_1 = ["해당 데이터 삭제", "평균값 적용"]
-
+        method_2 = ["구간화 적용", "군집화 적용"]
 
         combobox_category = ttk.Combobox(self, height=5, values=category_1)
         combobox_category.grid(row = 2, column = 2, padx = 10, pady = 10)
+        global my_catagory
+        my_catagory = combobox_category.get()    
 
         def combobox_get() :
             my_catagory = combobox_category.get()    
+            print(my_catagory)
+            print(cols[0])
         
         button3 = ttk.Button(self, text ="Select", command = combobox_get)
         button3.grid(row = 7, column = 4, padx = 10, pady = 10)
@@ -168,13 +184,11 @@ class Page2(tk.Frame):
         button1.grid(row = 7, column = 1, padx = 10, pady = 10)
         button2 = ttk.Button(self, text ="Next",
                             command = lambda : controller.show_frame(Page3))
-        button2.grid(row = 7, column = 4, padx = 10, pady = 10)
+        button2.grid(row = 7, column = 7, padx = 10, pady = 10)
 
         button3 = ttk.Button(self, text ="Select",
                             command = lambda : controller.show_frame(Page3))
         button3.grid(row = 7, column = 4, padx = 10, pady = 10)
-        
-
   
 class Page3(tk.Frame):
     def __init__(self, parent, controller):
