@@ -18,7 +18,7 @@ def modType(column, option):
 
 
 def handleMissingVal(column, option):
-    if option == "Do Notiong":
+    if option == "Do Nothing":
         return column
     elif option == "Replacing With Mean":
         column.fillna(column.mean(), inplace=True)

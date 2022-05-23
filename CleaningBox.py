@@ -98,9 +98,10 @@ class CleaningBox():
             else:
                 columnList.append(c)
                 df[c] = modType(df[c], options[c][0])
-                df[c] = handleMissingVal(df[c], options[c][1])
-
+                handleMissingVal(df[c], options[c][1])
+        print(df)
         data = df[columnList]
+        print(columnList)
         return data
         #root.modifyData(data)
 
