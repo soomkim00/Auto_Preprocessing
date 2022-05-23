@@ -13,9 +13,9 @@ combobox = ttk.Combobox(root, height = 5, width=60, values = file_list)
 combobox.current(0)
 combobox.grid(row = 0, column = 0, padx = 10, pady = 10)
 
-global data_name, data, df
 
 def selectData():
+    global data_name, data, df
     data_name = combobox.get()
     data = pd.read_csv(data_name)
     df = pd.DataFrame(data)
@@ -33,6 +33,7 @@ btn_print.grid(row = 2, column = 2, padx = 5, pady = 5)
 
 def view():
     tableView = Tk()
+    tableView.title("Data Head")
     tree = ttk.Treeview(tableView)
     tree.pack()
     cols = list(df.columns)
@@ -41,8 +42,9 @@ def view():
         tree.column(i, anchor="w")
         tree.heading(i, text=i, anchor='w')
 
-    for index, row in df.iterrows():
+    for index, row in df[:5].iterrows():
         tree.insert("",0,text=index,values=list(row))
+
 btn_view = Button(root, text = "View", command = view)
 btn_view.grid(row = 0, column = 2, padx = 5, pady = 5)
 
