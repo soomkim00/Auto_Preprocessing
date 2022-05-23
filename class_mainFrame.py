@@ -47,7 +47,7 @@ class mainFrame():
 
 
         def btn_data_cleaning():
-            #CleaningBox(self.data)
+            cbox = CleaningBox(self)
             pass
         btn_select_cleaning = tk.Button(wrapper2, text = "데이터 정제", command = btn_data_cleaning)
         btn_select_cleaning.grid(row = 0, column = 0, padx = 5, pady = 5)
@@ -88,4 +88,3 @@ class mainFrame():
     def getData(self):
         return self.data
 
-mainFrame()

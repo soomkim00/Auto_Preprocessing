@@ -21,8 +21,8 @@ def handleMissingVal(column, option):
     if option == "Do Notiong":
         return column
     elif option == "Replacing With Mean":
-        column.fillna(int(column.mean()), inplace=True)
+        column.fillna(column.mean(), inplace=True)
         return column
     elif option == "Replacing With Median":
-        column.fillna(int(column.median()), inplace =True)
+        column.fillna(column.median(), inplace =True)
         return column
