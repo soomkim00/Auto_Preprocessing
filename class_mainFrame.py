@@ -1,4 +1,4 @@
-from CleaningBox import CleaningBox
+from CleaningBox import *
 from function_mainFrame import *
 from read_csv import get_datalist
 import tkinter as tk
@@ -85,5 +85,7 @@ class mainFrame():
             tree.heading(i, text=i, anchor='w')
         for index, row in self.data[:5].iterrows():
             tree.insert("",0,text=index,values=list(row))
+    def getData(self):
+        return self.data
 
 mainFrame()

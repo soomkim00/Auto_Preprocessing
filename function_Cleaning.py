@@ -1,16 +1,5 @@
 import pandas as pd
 
-def cleanData(df, options):
-    columnList = []
-    for c in df.columns:
-        if options[c][2] == 0:
-            pass
-        else:
-            columnList.append(c)
-            modType(df[c], options[0])
-            handleMissingVal(df[c], options[1])
-
-    data = df[columnList]
 
 
 

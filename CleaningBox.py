@@ -2,15 +2,16 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import pandas as pd
 from function_Cleaning import * 
+from class_mainFrame import *
 
 
-class CleaningBox():
-    def __init__(self, df):
+class CleaningBox(mainFrame):
+    def __init__(self, root):
         window =  tk.Tk()
         self.options = {}
         amount_missing = tk.StringVar()
         check_drop = tk.IntVar()
-        cols = list(df.columns)
+        cols = list(root.getData().columns)
 
 
         wrapper = tk.LabelFrame(window, text="Select Column")
@@ -72,6 +73,7 @@ class CleaningBox():
         checkBox1.grid(row=3, column=1, padx = 10, pady=10)
 
         def processOption():
+
             window.distroy()
             pass
         btnOK = tk.Button(window, text = "OK", command= processOption)
@@ -83,9 +85,23 @@ class CleaningBox():
         window.resizable(False, False)
         window.mainloop()
 
+    def cleanData(self, df, options):
+        columnList = []
+        for c in df.columns:
+            if options[c][2] == 0:
+                pass
+            else:
+                columnList.append(c)
+                modType(df[c], options[0])
+                handleMissingVal(df[c], options[1])
+
+        data = df[columnList]
+        mainFrame.modifyData(data)
+
+
 
 data = [[82, 10],[86, 8],[90, 13]]
 df = pd.DataFrame(data, columns = ['year', 'backNum'])
-cBox = CleaningBox(df)
+#cBox = CleaningBox(df)
 
 #mainframe의 df를 변경하는 함수를 만들어서 OK버튼의 command 함수에 넣으면 될듯?
