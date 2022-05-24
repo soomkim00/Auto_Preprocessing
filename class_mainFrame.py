@@ -11,7 +11,7 @@ class mainFrame():
     def __init__(self):
         self.dataPath, self.dataList = get_datalist()
         self.data = None
-
+        self.dataName = ""
 
         root = tk.Tk()
         root.title("Auto Preprocessing")
@@ -27,6 +27,8 @@ class mainFrame():
 
         def selectData():
             data_name = combobox.get()
+            self.dataName = list(data_name.split("."))[0]
+            e.insert(0, self.dataName + "_processed.csv")
             data = pd.read_csv(data_name)
             df = pd.DataFrame(data)
             self.data = df
@@ -62,9 +64,10 @@ class mainFrame():
 
         e = tk.Entry(wrapper3, width=30)
         e.grid(row = 0, column = 0, padx = 5, pady = 5)
-        e.insert(0, "파일명을 입력하세요")
+        
         def save():
             print(e.get())
+            dataToCsv(self.data, self.dataPath, e.get())
         btn = tk.Button(wrapper3, text="Save", command=save)
         btn.grid(row = 0, column = 1, padx = 5, pady = 5)
 

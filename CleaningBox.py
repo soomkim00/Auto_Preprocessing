@@ -12,8 +12,7 @@ class CleaningBox():
         window =  tk.Tk()
         self.options = {}
         amount_missing = tk.StringVar()
-        check_drop = tk.IntVar()
-        cols = list(df.columns)
+        cols = ["Column Not Selected "] + list(df.columns)
         for c in cols:
             self.options[c] = ['Default', 'Do Nothing', 1]
 
@@ -35,10 +34,13 @@ class CleaningBox():
             colName = mycombo.get()
             amount_missing = df[colName].isnull().sum(axis=0)
             lblMissingValues.configure(text = amount_missing)
+            combo1.current(0)
+            combo2.current(0)
+            combo3.current(0)
 
         def colOptions():
             colName = mycombo.get()
-            self.options[colName] = [combo1.get(), combo2.get(), check_drop.get()]
+            self.options[colName] = [combo1.get(), combo2.get(), combo3.get()]
             print(self.options[colName])
 
         btnSelectCol = tk.Button(wrapper, text="Select", command=lookupColumn)
@@ -73,8 +75,10 @@ class CleaningBox():
         lbl4 = tk.Label(wrapper2, text = "Drop Check")
         lbl4.grid(row=3, column=0, padx = 10, pady=10)
 
-        checkBox1 = tk.Checkbutton(wrapper2, variable=check_drop, onvalue=1, offvalue=0)
-        checkBox1.grid(row=3, column=1, padx = 10, pady=10)
+        dropVals = ["Do Nothing", "Drop This Column"]
+        combo3 = ttk.Combobox(wrapper2, values=dropVals, height = 15, width = 30)    
+        combo3.current(0)    
+        combo3.grid(row=3, column=1, padx = 10, pady=10)
 
         def processOption():
             data = self.cleanData(df, self.options)
@@ -93,7 +97,7 @@ class CleaningBox():
     def cleanData(self, df, options):
         columnList = []
         for c in df.columns:
-            if options[c][2] == 0:
+            if options[c][2] == "Drop This Column":
                 pass
             else:
                 columnList.append(c)
