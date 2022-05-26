@@ -12,6 +12,7 @@ class CleaningBox():
         window =  tk.Tk()
         self.options = {}
         amount_missing = tk.StringVar()
+        amount_DataRow = tk.StringVar()
         cols = ["Column Not Selected "] + list(df.columns)
         for c in cols:
             self.options[c] = ['Default', 'Do Nothing', 1]
@@ -32,8 +33,10 @@ class CleaningBox():
         
         def lookupColumn():
             colName = mycombo.get()
-            amount_missing = df[colName].isnull().sum(axis=0)
-            lblMissingValues.configure(text = amount_missing)
+            amount_missing = str(df[colName].isnull().sum(axis=0))
+            amount_DataRow = str(len(df.index))
+            lblMissingValues.configure(text = amount_missing + "/" + amount_DataRow)
+
             combo1.current(0)
             combo2.current(0)
             combo3.current(0)

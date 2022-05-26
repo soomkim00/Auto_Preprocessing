@@ -1,6 +1,5 @@
 from CleaningBox import *
 from function_mainFrame import *
-from read_csv import get_datalist
 import tkinter as tk
 import tkinter.ttk as ttk
 import pandas as pd
