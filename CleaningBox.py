@@ -33,9 +33,9 @@ class CleaningBox():
         
         def lookupColumn():
             colName = mycombo.get()
-            amount_missing = str(df[colName].isnull().sum(axis=0))
-            amount_DataRow = str(len(df.index))
-            lblMissingValues.configure(text = amount_missing + "/" + amount_DataRow)
+            amount_DataRow = len(df.index)
+            missingRatio = round(amount_missing/amount_DataRow * 100, 2) 
+            lblMissingValues.configure(text = str(amount_missing) + "/" + str(amount_DataRow) + " ("+str(missingRatio)+ "%)")
 
             combo1.current(0)
             combo2.current(0)
