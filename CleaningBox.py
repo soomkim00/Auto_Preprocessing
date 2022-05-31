@@ -4,6 +4,7 @@ from numpy import NaN
 import pandas as pd
 from function_Cleaning import * 
 from class_mainFrame import *
+import datetime as dt
 
 
 class CleaningBox():
@@ -11,17 +12,34 @@ class CleaningBox():
         df = root.getData()
         window =  tk.Tk()
         self.options = {}
+        self.log = []
         amount_missing = tk.StringVar()
         amount_DataRow = tk.StringVar()
-        cols = ["Column Not Selected "] + list(df.columns)
+        
+        cols = ["Column Not Selected"] + list(df.columns)
         for c in cols:
-            self.options[c] = ['Default', 'Do Nothing', 1]
+            self.options[c] = ['Default', 'Do Nothing', 'Do Nothing']
+        del self.options["Column Not Selected"]
+
 
 
         wrapper = tk.LabelFrame(window, text="Select Column")
-        wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        wrapper.grid(row=0, column = 0, ipadx= 18, padx = 10, pady = 10)
         wrapper2 = tk.LabelFrame(window, text="Select Options")
-        wrapper2.pack(padx = 10, pady = 10, fill = "both", expand= "yes")
+        wrapper2.grid(row=1, column = 0, padx=10, pady=10)
+        wrapper3 = tk.LabelFrame(window, text= "Selected Options", relief="flat", bd=2, width=1000)
+        wrapper3.grid(row=0, column = 1, rowspan=2, padx=10, pady=10, sticky="n", ipady = 30)
+        self.treeview=ttk.Treeview(wrapper3, column = ["Time", "Column", "Data Type", "Missing Value","Drop Column"])
+        self.treeview["columns"] = ["Time", "Column", "Data Type", "Missing Value","Drop Column"]
+        self.treeview.column("#0", width=40)
+        self.treeview.heading("#0", text="num")
+        for i in range(len(self.treeview["columns"])):
+            self.treeview.column(self.treeview["columns"][i], width = 120)
+            self.treeview.heading(self.treeview["columns"][i], text = self.treeview["columns"][i], anchor="w")
+        self.treeview.pack()
+
+        def insertLog(option):
+            self.treeview.insert("", "end", text = len(self.log), values = option, iid=len(self.log))
 
 
         label1 = tk.Label(wrapper, text = "Column")
@@ -33,9 +51,10 @@ class CleaningBox():
         
         def lookupColumn():
             colName = mycombo.get()
-            amount_missing = str(df[colName].isnull().sum(axis=0))
-            amount_DataRow = str(len(df.index))
-            lblMissingValues.configure(text = amount_missing + "/" + amount_DataRow)
+            amount_missing = df[colName].isnull().sum(axis=0)
+            amount_DataRow = len(df.index)
+            missingRatio = round(amount_missing/amount_DataRow * 100, 2) 
+            lblMissingValues.configure(text = str(amount_missing) + "/" + str(amount_DataRow) + " ("+str(missingRatio)+ "%)")
 
             combo1.current(0)
             combo2.current(0)
@@ -44,13 +63,15 @@ class CleaningBox():
         def colOptions():
             colName = mycombo.get()
             self.options[colName] = [combo1.get(), combo2.get(), combo3.get()]
-            print(self.options[colName])
+            insertLog((dt.datetime.now(), colName, combo1.get(), combo2.get(), combo3.get()))
+            self.log.append((dt.datetime.now(), colName, combo1.get(), combo2.get(), combo3.get()))
+            
 
         btnSelectCol = tk.Button(wrapper, text="Select", command=lookupColumn)
         btnSaveOptions = tk.Button(wrapper2, text="Save Column Options", command=colOptions)
 
         btnSelectCol.grid(row = 0, column=2, padx=10, pady=10)
-        btnSaveOptions.grid(row = 3, column=4, padx=10, pady=10)
+        btnSaveOptions.grid(row = 4, column=0, padx=10, pady=10)
 
 
         lbl1 = tk.Label(wrapper2, text = "Data Type")
@@ -70,7 +91,7 @@ class CleaningBox():
         lbl3 = tk.Label(wrapper2, text = "Handle Missing Values")
         lbl3.grid(row=2, column=0, padx = 10, pady=10)
 
-        handleMissingVals = ["Do Nothing", "Replacing With Mean", "Replacing With Median", "Others..."]
+        handleMissingVals = ["Do Nothing", "Replacing With Mean", "Replacing With Median", "Forward Fill","Drop Null Row"]
         combo2 = ttk.Combobox(wrapper2, values = handleMissingVals, height = 15,  width = 30)
         combo2.current(0)
         combo2.grid(row=2, column=1, padx=10, pady = 10)
@@ -90,10 +111,10 @@ class CleaningBox():
             pass
         btnOK = tk.Button(window, text = "OK", command= processOption)
         #btnOK.grid(column= 4, row = 5, padx = 10, pady = 10)
-        btnOK.pack()
+        btnOK.grid(column = 1, row = 2, padx = 10, pady = 10)
 
         window.title("CleaningBox")
-        window.geometry("720x330")
+        window.geometry("1000x330")
         window.resizable(False, False)
         window.mainloop()
 

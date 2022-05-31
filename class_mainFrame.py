@@ -1,3 +1,4 @@
+from tkinter import filedialog
 from CleaningBox import *
 from function_mainFrame import *
 import tkinter as tk
@@ -18,19 +19,25 @@ class mainFrame():
         root.resizable(False, False) #x(너비), y(높이) 값 변경 불가 (창 크기 변경불가)
         wrapper = tk.LabelFrame(root, text="데이터 확인")
         wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        
 
         
         combobox = ttk.Combobox(wrapper, height = 5, width=60, values = self.dataList)
         combobox.current(0)
         combobox.grid(row = 0, column = 0, padx = 5, pady = 5)
 
+        # def selectData():
+        #     data_name = combobox.get()
+        #     self.dataName = list(data_name.split("."))[0]
+        #     e.insert(0, self.dataName + "_processed.csv")
+        #     data = pd.read_csv(data_name)
+        #     df = pd.DataFrame(data)
+        #     self.data = df
+
         def selectData():
-            data_name = combobox.get()
-            self.dataName = list(data_name.split("."))[0]
-            e.insert(0, self.dataName + "_processed.csv")
-            data = pd.read_csv(data_name)
-            df = pd.DataFrame(data)
-            self.data = df
+            self.dataPath = tk.filedialog.askopenfilename(initialdir='path', title='select file', filetypes=(("csv","*.csv"),("all files","*.*")))
+            data = pd.read_csv(self.dataPath)
+            self.data = pd.DataFrame(data)
 
         btn_selectData = tk.Button(wrapper, text = "Select", command = selectData)
         btn_selectData.grid(row = 0, column = 1, padx = 5, pady = 5)
@@ -65,8 +72,10 @@ class mainFrame():
         e.grid(row = 0, column = 0, padx = 5, pady = 5)
         
         def save():
-            print(e.get())
-            dataToCsv(self.data, self.dataPath, e.get())
+            filename = filedialog.asksaveasfilename(initialdir="path", title="Save file",
+                        filetypes=(("CSV files", "*.csv"),
+                        ("all files", "*.*")))
+            dataToCsv(self.data, filename)
         btn = tk.Button(wrapper3, text="Save", command=save)
         btn.grid(row = 0, column = 1, padx = 5, pady = 5)
 

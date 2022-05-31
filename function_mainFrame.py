@@ -12,8 +12,8 @@ def get_datalist():
     print(data_path)
     return data_path, data_list
 
-def dataToCsv(data, path, name):
+def dataToCsv(data, path):
     data = pd.DataFrame(data)
-    data.to_csv(path+"\\"+name)
+    data.to_csv(path+".csv")
 
 

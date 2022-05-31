@@ -15,6 +15,7 @@ def modType(column, option):
 
     elif option  == "Datetime":
         return pd.to_datetime(column)
+    
 
 
 def handleMissingVal(column, option):
@@ -25,4 +26,10 @@ def handleMissingVal(column, option):
         return column
     elif option == "Replacing With Median":
         column.fillna(column.median(), inplace =True)
+        return column
+    elif option == "Forward Fill":
+        column.ffill(axis = 0)
+        return column
+    elif option == "Drop Null Row":
+        column.dropna()
         return column
