@@ -34,7 +34,7 @@ class CleaningBox():
         self.treeview.column("#0", width=40)
         self.treeview.heading("#0", text="num")
         for i in range(len(self.treeview["columns"])):
-            self.treeview.column(self.treeview["columns"][i], width = 120)
+            self.treeview.column(self.treeview["columns"][i], width = 100)
             self.treeview.heading(self.treeview["columns"][i], text = self.treeview["columns"][i], anchor="w")
         self.treeview.pack()
 
