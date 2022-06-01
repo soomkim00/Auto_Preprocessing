@@ -16,10 +16,10 @@ class CleaningBox():
         amount_missing = tk.StringVar()
         amount_DataRow = tk.StringVar()
         
-        cols = ["Column Not Selected"] + list(df.columns)
+        cols = list(df.columns)
         for c in cols:
             self.options[c] = ['Default', 'Do Nothing', 'Do Nothing']
-        del self.options["Column Not Selected"]
+     
 
 
 
@@ -31,11 +31,15 @@ class CleaningBox():
         wrapper3.grid(row=0, column = 1, rowspan=2, padx=10, pady=10, sticky="n", ipady = 30)
         self.treeview=ttk.Treeview(wrapper3, column = ["Time", "Column", "Data Type", "Missing Value","Drop Column"])
         self.treeview["columns"] = ["Time", "Column", "Data Type", "Missing Value","Drop Column"]
-        self.treeview.column("#0", width=40)
+        self.treeview.column("#0", width=33)
         self.treeview.heading("#0", text="num")
         for i in range(len(self.treeview["columns"])):
-            self.treeview.column(self.treeview["columns"][i], width = 100)
             self.treeview.heading(self.treeview["columns"][i], text = self.treeview["columns"][i], anchor="w")
+        self.treeview.column("#1", width = 109)
+        self.treeview.column("#2", width = 100)
+        self.treeview.column("#3", width = 100)
+        self.treeview.column("#4", width = 120)
+
         self.treeview.pack()
 
         def insertLog(option):
@@ -45,7 +49,7 @@ class CleaningBox():
         label1 = tk.Label(wrapper, text = "Column")
         label1.grid(row=0, column=0, padx = 10, pady = 10)
         
-        mycombo = ttk.Combobox(wrapper, height = 15, values = cols, width=30)
+        mycombo = ttk.Combobox(wrapper, height = 15, values = [["Column Not Selected"]]+cols, width=30)
         mycombo.current(0)
         mycombo.grid(row = 0, column = 1)
         
@@ -114,8 +118,8 @@ class CleaningBox():
         btnOK.grid(column = 1, row = 2, padx = 10, pady = 10)
 
         window.title("CleaningBox")
-        window.geometry("1000x330")
-        window.resizable(False, False)
+        window.geometry("1100x330")
+        window.resizable(True, True)
         window.mainloop()
 
     def cleanData(self, df, options):

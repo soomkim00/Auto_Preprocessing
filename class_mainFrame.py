@@ -1,6 +1,7 @@
 from tkinter import filedialog
 from CleaningBox import *
 from function_mainFrame import *
+from class_AnalysisBox import analysisBox
 import tkinter as tk
 import tkinter.ttk as ttk
 import pandas as pd
@@ -22,9 +23,9 @@ class mainFrame():
         
 
         
-        combobox = ttk.Combobox(wrapper, height = 5, width=60, values = self.dataList)
-        combobox.current(0)
-        combobox.grid(row = 0, column = 0, padx = 5, pady = 5)
+        #combobox = ttk.Combobox(wrapper, height = 5, width=60, values = self.dataList)
+        #combobox.current(0)
+        #combobox.grid(row = 0, column = 0, padx = 5, pady = 5)
 
         # def selectData():
         #     data_name = combobox.get()
@@ -39,16 +40,17 @@ class mainFrame():
             data = pd.read_csv(self.dataPath)
             self.data = pd.DataFrame(data)
 
-        btn_selectData = tk.Button(wrapper, text = "Select", command = selectData)
+        btn_selectData = tk.Button(wrapper, text = "Select Data", command = selectData, width=10)
         btn_selectData.grid(row = 0, column = 1, padx = 5, pady = 5)
 
-        btn_view = tk.Button(wrapper, text = "View", command = self.view) 
+        btn_view = tk.Button(wrapper, text = "View", command = self.view, width=10) 
         btn_view.grid(row = 0, column = 2, padx = 5, pady = 5)
 
         def viewdetails():
-            pass
-        btn_viewdetails = tk.Button(wrapper, text = "Viewdetails", command = viewdetails)
-        btn_viewdetails.grid(row = 1, column = 1, padx = 5, pady = 5)
+            abox = analysisBox(self)
+            
+        btn_viewdetails = tk.Button(wrapper, text = "View Details", command = viewdetails, width=10)
+        btn_viewdetails.grid(row = 0, column = 3, padx = 5, pady = 5)
 
         wrapper2 = tk.LabelFrame(root, text="데이터 처리")
         wrapper2.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
@@ -68,8 +70,7 @@ class mainFrame():
         wrapper3 = tk.LabelFrame(root, text="데이터 저장")
         wrapper3.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
 
-        e = tk.Entry(wrapper3, width=30)
-        e.grid(row = 0, column = 0, padx = 5, pady = 5)
+    
         
         def save():
             filename = filedialog.asksaveasfilename(initialdir="path", title="Save file",
