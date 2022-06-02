@@ -1,4 +1,9 @@
 import pandas as pd
+import missingno as msno
+import tkinter as tk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 def getfirstlook(df, nrows=5, uniqueids=None):
     out = {}
     #out['head'] = df.head(nrows)
@@ -36,3 +41,14 @@ def filterNumeric(df):
     numerics = ['int16', 'int32', 'int64', 'float32', 'float64']
     df = df.select_dtypes(include=numerics)
     return df
+
+
+def show_msno_matrix(df):
+    window = tk.Tk()  #Tk 객체 생성. 기본 윈도우 객체
+    fig = msno.matrix(df).get_figure()
+    chart_type = FigureCanvasTkAgg(fig, master=window)
+    
+    
+    chart_type.draw()
+    chart_type.get_tk_widget().pack()
+    window.mainloop()

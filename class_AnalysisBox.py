@@ -18,11 +18,12 @@ class analysisBox():
             lbl1 = tk.Label(infos, text = displaydict(getfirstlook(self.data)), anchor='w', justify='left')
             lbl1.pack()
             infos.mainloop()
-            pass
+            
         btn1 = tk.Button(wrapper, text="Basic Information", command=info)
         btn1.pack()
         def nullGraphic():
-            pass
+            show_msno_matrix(self.data)
+            
         btn2 = tk.Button(wrapper, text="Null Graphic", command=nullGraphic)
         btn2.pack()
 
