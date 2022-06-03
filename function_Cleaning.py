@@ -18,18 +18,20 @@ def modType(column, option):
     
 
 
-def handleMissingVal(column, option):
+def handleMissingVal(df, column, option):
     if option == "Do Nothing":
-        return column
+        return df
     elif option == "Replacing With Mean":
-        column.fillna(column.mean(), inplace=True)
-        return column
+        df[column].fillna(column.mean(), inplace=True)
+        return df
     elif option == "Replacing With Median":
-        column.fillna(column.median(), inplace =True)
-        return column
+        df[column].fillna(column.median(), inplace =True)
+        return df
     elif option == "Forward Fill":
-        column.ffill(axis = 0)
-        return column
+        df[column].ffill(axis = 0)
+        return df
     elif option == "Drop Null Row":
-        column.dropna()
-        return column
+        df[column].dropna()
+        return df
+    else:
+        return df

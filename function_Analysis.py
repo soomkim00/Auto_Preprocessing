@@ -52,3 +52,10 @@ def show_msno_matrix(df):
     chart_type.draw()
     chart_type.get_tk_widget().pack()
     window.mainloop()
+
+def getDataTypes(df):
+    types = {}
+    for i in df.columns:
+        types[i] = df[i].dtype
+    return types
+    
