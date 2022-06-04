@@ -17,3 +17,10 @@ def dataToCsv(data, path):
     data.to_csv(path+".csv")
 
 
+def addDataStack(stack, data):
+    if len(stack) < 3:
+        stack.append(data)
+    
+    else:
+        pass
+    return stack

@@ -15,13 +15,14 @@ import pandas as pd
 
 class mainFrame():
     def __init__(self):
-
         root = tk.Tk()
         root.title("Auto Preprocessing")
         root.geometry("400x400") #가로*세로 + (x좌표 + y 좌표)
         root.resizable(False, False) #x(너비), y(높이) 값 변경 불가 (창 크기 변경불가)
         wrapper = tk.LabelFrame(root, text="데이터 확인")
         wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        self.stack = []
+        self.log = []
 
         def selectData():
             self.dataPath = tk.filedialog.askopenfilename(initialdir='path', title='select file', filetypes=(("csv","*.csv"),("all files","*.*")))
@@ -310,3 +311,26 @@ class mainFrame():
      
     def getData(self):
         return self.data
+
+    def dataRestore(self):
+        if len(self.stack) > 0:
+            self.data = self.stack.pop()
+        return self.data
+    
+    def appendLog(self, lst):
+        for i in lst:
+            self.log.append(i)
+
+    def showWholeLog(self):
+        tableView = tk.Tk()
+        tableView.geometry("600x280")
+        tableView.title("Process Log")
+        tree = ttk.Treeview(tableView)
+        tree.pack()
+        cols = self.log
+        tree["columns"] = ["Time", "Column", "Options"]
+        for i in cols:
+            tree.column(i, anchor="w")
+            tree.heading(i, text=i, anchor='w')
+        for i in self.log:
+            tree.insert("",0,text=index,values=i)
