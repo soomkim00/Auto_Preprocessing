@@ -22,5 +22,13 @@ def addDataStack(stack, data):
         stack.append(data)
     
     else:
-        pass
+        stack.pop(0)
+        stack.append(data)
     return stack
+
+import tkinter.messagebox as msgbox
+
+def secces():
+    msgbox.showinfo("알림", "정상적으로 처리 되었습니다.")
+def warn():
+    msgbox.showwarning("경고", "오류가 발생했습니다.")

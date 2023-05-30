@@ -2,23 +2,30 @@ from operator import index
 from tkinter import filedialog
 from CleaningBox import *
 from TransBox import *
+from class_NoisyBox import *
 from ReductionBox import *
 from function_mainFrame import *
 from class_AnalysisBox import analysisBox
 from tkinter.tix import *
-from function_Analysis import show_msno_matrix, getDataTypes
+from function_Analysis import show_msno_matrix, getDataTypes, show_plotbox
 import tkinter as tk
+from tkinter import *
 import tkinter.ttk as ttk
 import pandas as pd
+from function_recommend import *
 
 
 
 class mainFrame():
     def __init__(self):
+
         root = tk.Tk()
         root.title("Auto Preprocessing")
-        root.geometry("400x400") #가로*세로 + (x좌표 + y 좌표)
+        root.geometry("500x400") #가로*세로 + (x좌표 + y 좌표)
         root.resizable(False, False) #x(너비), y(높이) 값 변경 불가 (창 크기 변경불가)
+        wrapper0 = tk.LabelFrame(root, text="")
+        wrapper0.pack(padx = 10, pady = 5, fill = "both")
+
         wrapper = tk.LabelFrame(root, text="데이터 확인")
         wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
         self.stack = []
@@ -27,21 +34,31 @@ class mainFrame():
         def selectData():
             self.dataPath = tk.filedialog.askopenfilename(initialdir='path', title='select file', filetypes=(("csv","*.csv"),("all files","*.*")))
             data = pd.read_csv(self.dataPath)
+            self.dataName = list(self.dataPath.split('/'))
+            self.dataName = self.dataName[-1]
             self.data = pd.DataFrame(data)
-            self.orig_data = self.data     
-
-        btn_selectData = tk.Button(wrapper, text = "Select", command = selectData)
-        btn_selectData.grid(row = 0, column = 1, padx = 5, pady = 5)
+            self.orig_data = self.data.copy()
+            self.pushStack(self.data)
+            lbl_dataName.configure(text= "Current File Name : "+ self.dataName)
+        btn_selectData = tk.Button(wrapper0, text = "데이터 불러오기", command = selectData)
+        btn_selectData.grid(row = 0, column = 0, padx = 5, pady = 5)
+        
+        lbl_dataName = tk.Label(wrapper0, text="Data Not Selected Yet")
+        lbl_dataName.grid(row=0, column=1, padx=5, pady=5)
 
         #btn_view = tk.Button(wrapper, text = "View", command = self.view) 
         #btn_view.grid(row = 0, column = 2, padx = 5, pady = 5)
 
         btn_view_original = tk.Button(wrapper, text = "View Original", command = self.view_Original) 
-        btn_view_original.grid(row = 0, column = 2, padx = 5, pady = 5)
+        btn_view_original.grid(row = 0, column = 1, padx = 5, pady = 5)
 
         def nullbox():
             show_msno_matrix(self.data)
         btn_nullGraphic = tk.Button(wrapper, text = "Null Graphics", command = nullbox)
+        btn_nullGraphic.grid(row = 0, column = 3, padx = 5, pady = 5)
+        def plotbox():
+            show_plotbox(self.data)
+        btn_nullGraphic = tk.Button(wrapper, text = "Box Plot", command = plotbox)
         btn_nullGraphic.grid(row = 0, column = 4, padx = 5, pady = 5)
 
 
@@ -49,11 +66,20 @@ class mainFrame():
             abox = analysisBox(self)
             
         btn_viewdetails = tk.Button(wrapper, text = "View Details", command = viewdetails, width=10)
-        btn_viewdetails.grid(row = 0, column = 3, padx = 5, pady = 5)
+        btn_viewdetails.grid(row = 0, column = 2, padx = 5, pady = 5)
 
         wrapper2 = tk.LabelFrame(root, text="데이터 처리")
         wrapper2.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
 
+        def undo():
+            try:    
+                self.data = self.dataRestore()
+                print("stack : ", self.stack)
+                secces()
+            except:
+                warn()
+        btn_undo = tk.Button(wrapper, text = "되돌리기", command = undo, width=8)
+        btn_undo.grid(row = 0, column = 6, padx = 5, pady=5)
 
         def btn_data_cleaning():
             cbox = CleaningBox(self)
@@ -61,37 +87,63 @@ class mainFrame():
         btn_select_cleaning = tk.Button(wrapper2, text = "데이터 정제", command = btn_data_cleaning)
         btn_select_cleaning.grid(row = 0, column = 0, padx = 5, pady = 5)
 
+        def btn_data_Noisy():
+            nbox = NoisyBox(self)
+            pass
+        btn_select_noisy = tk.Button(wrapper2, text = "이상치 처리", command = btn_data_Noisy)
+        btn_select_noisy.grid(row = 0, column = 1, padx = 5, pady = 5)
+
+
         def btn_data_Transformation():
             tbox = TransBox(self)
             pass
-        btn_select_cleaning = tk.Button(wrapper2, text = "데이터 변환", command = btn_data_Transformation)
-        btn_select_cleaning.grid(row = 0, column = 1, padx = 5, pady = 5)
+        btn_select_cleaning = tk.Button(wrapper2, text = "데이터 정규화", command = btn_data_Transformation)
+        btn_select_cleaning.grid(row = 0, column = 2, padx = 5, pady = 5)
 
         def btn_data_Reduction():
             rbox = ReductionBox(self)
             pass
-        btn_select_reduction = tk.Button(wrapper2, text = "데이터 축소", command = btn_data_Reduction)
-        btn_select_reduction.grid(row = 0, column = 2, padx = 5, pady = 5)
+        btn_select_reduction = tk.Button(wrapper2, text = "데이터 범주화", command = btn_data_Reduction)
+        btn_select_reduction.grid(row = 0, column = 3, padx = 5, pady = 5)
 
-        wrapper3 = tk.LabelFrame(root, text="데이터 저장")
-        wrapper3.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        def btn_recommend():
+            try:
+                newData = recommend_cleaning(self.data)
+                self.pushStack(newData)
+                self.modifyData(newData)
+                secces()
+            except:
+                warn()
         
-        def save():
-            filename = filedialog.asksaveasfilename(initialdir="path", title="Save file",
-                        filetypes=(("CSV files", "*.csv"),
-                        ("all files", "*.*")))
-            dataToCsv(self.data, filename)
-        btn = tk.Button(wrapper3, text="Save", command=save)
-        btn.grid(row = 0, column = 1, padx = 5, pady = 5)
+        btn_auto_recommend = tk.Button(wrapper0, text = "원클릭 데이터 처리", command = btn_recommend)
+        btn_auto_recommend.grid(row = 1, column = 0, padx = 5, pady = 5)
 
-        wrapper4 = tk.LabelFrame(root, text="도움말")
+        wrapper3 = tk.LabelFrame(root, text="도움말")
+        wrapper3.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+
+        wrapper4 = tk.LabelFrame(root, text="데이터 저장")
         wrapper4.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
 
-        btn_help = tk.Button(wrapper4, text = "Interface_help", command = self.help_btn)
+        def save():
+            try:
+                filename = filedialog.asksaveasfilename(initialdir="path", title="Save file",
+                            filetypes=(("CSV files", "*.csv"),
+                            ("all files", "*.*")))
+                dataToCsv(self.data, filename)
+                secces()
+            except:
+                warn()
+        btn = tk.Button(wrapper4, text="데이터 저장하기", command=save)
+        btn.grid(row = 0, column = 1, padx = 5, pady = 5)
+
+
+        btn_help = tk.Button(wrapper3, text = "Interface_Help", command = self.help_btn)
         btn_help.grid(row = 0, column = 0, padx = 5, pady = 5)
-        step_help = tk.Button(wrapper4, text = "Step_help", command = self.help_step)
+        step_help = tk.Button(wrapper3, text = "Step_Help", command = self.help_step)
         step_help.grid(row = 0, column = 1, padx = 5, pady = 5)
 
+        btn_log = tk.Button(wrapper3, text = "데이터 처리 내역", command = self.showWholeLog)
+        btn_log.grid(row = 0, column = 2, padx = 5, pady = 5)
         root.mainloop()
         pass
 
@@ -107,7 +159,7 @@ class mainFrame():
     
     def view_Original(self):
         tableView = tk.Tk()
-        tableView.geometry("600x280")
+        tableView.geometry("1600x280")
         tableView.title("Original Data Head")
         tree = ttk.Treeview(tableView)
         tree.pack()
@@ -115,7 +167,7 @@ class mainFrame():
         tree["columns"] = cols
         types = list(getDataTypes(self.data).values())
         for i in cols:
-            tree.column(i, anchor="w")
+            tree.column(i, anchor="w", width = 100)
             tree.heading(i, text=i, anchor='w')
         for index, row in self.orig_data[:5].iterrows():
             tree.insert("",0,text=index,values=list(row))
@@ -124,18 +176,17 @@ class mainFrame():
 
     def help_btn(self):
         tableView = tk.Tk()
-        tableView.geometry("750x900")
-        tableView.title("help - MainPage")
-
+        tableView.geometry("1800x1200")
+        tableView.title("Help - Interface")
 
         wrapper = tk.LabelFrame(tableView, text="MainPage")
-        wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        wrapper.grid(row=0, column=0, padx = 10, pady = 5)
         wrapper1 = tk.LabelFrame(tableView, text="데이터 정제")
-        wrapper1.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        wrapper1.grid(row=1, column=0, padx = 10, pady = 5)
         wrapper2 = tk.LabelFrame(tableView, text="데이터 변환")
-        wrapper2.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        wrapper2.grid(row=2, column=0, padx = 10, pady = 5)
         wrapper3 = tk.LabelFrame(tableView, text="데이터 축소")
-        wrapper3.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
+        wrapper3.grid(row=0, column=1, padx = 10, pady = 5)
         
         select_help = tk.Label(wrapper, text="작업을 처리할 데이터 파일을 선택합니다.")
         btn_selectData = tk.Button(wrapper, text = "Select")   
@@ -275,7 +326,7 @@ class mainFrame():
     def help_step(self):
         tableView = tk.Tk()
         tableView.geometry("720x720")
-        tableView.title("help - Step")
+        tableView.title("Help - Step")
 
         wrapper = tk.LabelFrame(tableView, text="데이터 확인 순서")
         wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
@@ -308,14 +359,21 @@ class mainFrame():
         step_help_clean_1.grid(row = 0, column = 0, padx = 0, pady = 5)
         step_help_clean_11 = tk.Label(wrapper2, text="데이터를 ~~ 할때 사용합니다. ")
         step_help_clean_11.grid(row = 0, column = 1, padx = 40, pady = 5, sticky="w")
+    
+    
      
-    def getData(self):
-        return self.data
 
     def dataRestore(self):
-        if len(self.stack) > 0:
-            self.data = self.stack.pop()
-        return self.data
+        print(len(self.stack))
+        if len(self.stack) > 1:
+            self.stack.pop()
+            data = self.stack[-1]
+   
+        elif len(self.stack) == 1:
+            data = self.data[-1]
+        else:
+            data = self.data
+        return data
     
     def appendLog(self, lst):
         for i in lst:
@@ -323,14 +381,23 @@ class mainFrame():
 
     def showWholeLog(self):
         tableView = tk.Tk()
-        tableView.geometry("600x280")
+        tableView.geometry("1300x280")
         tableView.title("Process Log")
         tree = ttk.Treeview(tableView)
         tree.pack()
-        cols = self.log
         tree["columns"] = ["Time", "Column", "Options"]
-        for i in cols:
+        for i in tree["columns"]:
+            tree.column("#0", anchor = "w", width = 80)
+
             tree.column(i, anchor="w")
+            tree.column("Options",anchor="w", width=700)
             tree.heading(i, text=i, anchor='w')
         for i in self.log:
-            tree.insert("",0,text=index,values=i)
+            tree.insert("",0,text=self.log.index(i)+1,values=i)
+    def getData(self):
+        return self.data
+
+    def pushStack(self, data):
+        if len(self.stack)>=5:
+            self.stack.pop(0)
+        self.stack.append(data.copy())

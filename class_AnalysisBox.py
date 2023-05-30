@@ -5,6 +5,9 @@ from class_mainFrame import *
 from function_Analysis import *
 class analysisBox():
     def __init__(self, root):
+        
+
+ 
         self.data = root.getData()
         window = tk.Tk()
         wrapper = tk.LabelFrame(window, text="Data Information")
@@ -31,11 +34,12 @@ class analysisBox():
                 tree.pack()
                 cols = list(self.data.columns)
                 tree["columns"] = cols
-                print(types)
                 types = list(getDataTypes(self.data).values())
-
+                print(types)
+                
+                tree.column("#0", anchor = "w", width = 80)
                 for i in cols:
-                    tree.column(i, anchor="w")
+                    tree.column(i, anchor="w", width=100)
                     tree.heading(i, text=i, anchor='w')
                 for index, row in self.data[:5].iterrows():
                     tree.insert("",0,text=index,values=list(row))
@@ -45,12 +49,12 @@ class analysisBox():
         def statistics():
             stats = gettots(filterNumeric(self.data)).transpose()
             treeview=ttk.Treeview(wrapper2, column = stats.columns)
-            treeview.column("#0", width=50)
+            treeview.column("#0", width=100)
           
             cols = list(stats.columns)
             treeview["columns"] = cols
             for i in cols:
-                treeview.column(i, anchor="w")
+                treeview.column(i, anchor="w", width=100)
                 treeview.heading(i, text=i, anchor='w')
             for index, row in stats.iterrows():
                 treeview.insert("",0,text=index,values=list(row))
@@ -60,7 +64,7 @@ class analysisBox():
         view()
         statistics()
         window.title("Analysis Box")
-        window.geometry("720x600")
+        window.geometry("1600x600")
         window.resizable(True, True)
         window.mainloop()
 

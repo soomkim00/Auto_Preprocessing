@@ -20,9 +20,6 @@ class CleaningBox():
         for c in cols:
             self.options[c] = ['Default', 'Do Nothing', 'Do Nothing']
      
-
-
-
         wrapper = tk.LabelFrame(window, text="Select Column")
         wrapper.grid(row=0, column = 0, ipadx= 18, padx = 10, pady = 10)
         wrapper2 = tk.LabelFrame(window, text="Select Options")
@@ -39,13 +36,9 @@ class CleaningBox():
         self.treeview.column("#2", width = 100)
         self.treeview.column("#3", width = 100)
         self.treeview.column("#4", width = 120)
-
         self.treeview.pack()
-
         def insertLog(option):
-            self.treeview.insert("", "end", text = len(self.log), values = option, iid=len(self.log))
-
-
+            self.treeview.insert("", "end", text = len(self.log)+1, values = option, iid=len(self.log))
         label1 = tk.Label(wrapper, text = "Column")
         label1.grid(row=0, column=0, padx = 10, pady = 10)
         
@@ -109,16 +102,23 @@ class CleaningBox():
         combo3.grid(row=3, column=1, padx = 10, pady=10)
 
         def processOption():
-            data = self.cleanData(df, self.options)
-            root.modifyData(data)
-            print(data)
-            pass
-        btnOK = tk.Button(window, text = "OK", command= processOption)
-        #btnOK.grid(column= 4, row = 5, padx = 10, pady = 10)
-        btnOK.grid(column = 1, row = 2, padx = 10, pady = 10)
+            try:
+                data = self.cleanData(df, self.options)
+                root.modifyData(data)
+                root.appendLog(self.processLog())
+                root.pushStack(data)
+                print(data)
+                secces()
+            except:
+                warn()
+
+        a1 = tk.Label(wrapper3, text = "")
+        a1.pack()
+        btnOK = tk.Button(wrapper3, text = "OK", command= processOption)
+        btnOK.pack()
 
         window.title("CleaningBox")
-        window.geometry("1100x330")
+        window.geometry("1180x380")
         window.resizable(True, True)
         window.mainloop()
 
@@ -137,5 +137,13 @@ class CleaningBox():
         print(columnList)
         return data
         #root.modifyData(data)
+
+    def processLog(self):
+        log = []
+        for i in self.options.keys():
+            defaultOption = ['Default', 'Do Nothing', 'Do Nothing']
+            if self.options[i] != defaultOption:
+                log.append([dt.datetime.now(), i, self.options[i]])
+        return log
 
 #mainframe의 df를 변경하는 함수를 만들어서 OK버튼의 command 함수에 넣으면 될듯?

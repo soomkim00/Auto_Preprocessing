@@ -1,102 +1,127 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-from turtle import right
 import pandas as pd
 from function_Trans import *
 from class_mainFrame import *
+import datetime as dt
 
 class TransBox():
     def __init__(self, root):
         df = root.getData()
         window =  tk.Tk()
         self.options = {}
-        amount_missing = tk.StringVar()
-        check_drop = tk.IntVar()
-        cols = list(df.columns)  
-        cols = ["Column Not Selected "] + list(df.columns)
+        self.log = []
 
-        wrapper = tk.LabelFrame(window, text="데이터 변환 방법 선택")
-        wrapper.pack(padx = 10, pady = 5, fill = "both", expand= "yes")
-        wrapper2 = tk.LabelFrame(window, text="세부사항 선택")
-        wrapper2.pack(padx = 10, pady = 10, fill = "both", expand= "yes")
-        wrapper3 = tk.LabelFrame(window)
-        wrapper3.pack()
+        cols = list(df.columns)
+        for c in cols:
+            self.options[c] = ['Default','column','method']
 
+        wrapper = tk.LabelFrame(window, text="Select Column")
+        wrapper.grid(row=0, column = 0, ipadx= 18, padx = 10, pady = 10)
+        wrapper2 = tk.LabelFrame(window, text="Select Options")
+        wrapper2.grid(row=1, column = 0, padx=10, pady=10)
+        wrapper3 = tk.LabelFrame(window, text= "Selected Options", relief="flat", bd=2, width=1000)
+        wrapper3.grid(row=0, column = 1, rowspan=2, padx=10, pady=10, sticky="n", ipady = 30)
+        self.treeview=ttk.Treeview(wrapper3, column = ["Time", "Column", "Method"])
+        self.treeview["columns"] = ["Time", "Column", "method"]
+        self.treeview.column("#0", width=33)
+        self.treeview.heading("#0", text="num")
+        for i in range(len(self.treeview["columns"])):
+            self.treeview.heading(self.treeview["columns"][i], text = self.treeview["columns"][i], anchor="w")
+        self.treeview.column("#1", width = 109)
+        self.treeview.column("#2", width = 100)
+        self.treeview.pack()
+        def insertLog(option):
+            self.treeview.insert("", "end", text = len(self.log), values = option, iid=len(self.log))
         scl_method = ["StandardScaler", "MinMaxScaler", "MaxAbsScaler", "RobustScaler"]  #"RobustScaler", "MaxAbsScaler" 추가 ?
 
-        label1 = tk.Label(wrapper, text = "변환 방법 :")
-        label1.grid(row=0, column=0, padx = 10, pady = 10)
+        label1 = tk.Label(wrapper2, text = "변환 방법   :")
+        label1.grid(row=0, column=0)
         
-        mycombo = ttk.Combobox(wrapper, height = 15, values = scl_method, width=30)
-        mycombo.current(0)
-        mycombo.grid(row = 0, column = 1, padx = 5, pady = 5)
-
-
+        mycombo1 = ttk.Combobox(wrapper2, height = 15, values = scl_method, width=30)
+        mycombo1.current(0)
+        mycombo1.grid(row = 0, column = 1)
 
         def selectData():
             global transformation_method
-            transformation_method = mycombo.get()
+            transformation_method = mycombo1.get()
             print(transformation_method)
-            if(transformation_method=="StandardScaler"):
-                lbl1 = tk.Label(wrapper, text = "data들을 표준 정규화 한다.")
-                lbl1.grid(row=1, column=3, padx = 5, pady=5)
-            elif(transformation_method=="MinMaxScaler"):
-                lbl1 = tk.Label(wrapper, text = "data들을 0~1 사이 범위에 정규화 한다.")
-                lbl1.grid(row=1, column=3, padx = 5, pady=5)
-            elif(transformation_method=="MaxAbsScaler"):
-                lbl1 = tk.Label(wrapper, text = "data들을 -1~1 사이 범위에 정규화 한다. (값이 양수만 존재할 경우, MinMaxScaler와 동일")
-                lbl1.grid(row=1, column=3, padx = 5, pady=5)
-            elif(transformation_method=="RobustScaler"):
-                lbl1 = tk.Label(wrapper, text = "data들을 0~1 사이 범위에 정규화 한다.")
-                lbl1.grid(row=1, column=3, padx = 5, pady=5)
 
-        btn_selectData = tk.Button(wrapper, text = "Select", command = selectData)
+        btn_selectData = tk.Button(wrapper2, text = "Select", command = selectData)
         btn_selectData.grid(row = 0, column = 2, padx = 5, pady = 5)
 
-        cols_trans = list(df.columns)
-        label2 = tk.Label(wrapper2, text = "Column :")
+        cols_trans = ["Column Not Selected "] + list(filterNumeric(df).columns)
+        label2 = tk.Label(wrapper, text = "Column   :")
         label2.grid(row=0, column=0, padx = 10, pady = 10)
         
-        mycombo2 = ttk.Combobox(wrapper2, height = 15, values = cols_trans, width=30)
-        mycombo2.current(0)
-        mycombo2.grid(row = 0, column = 1)
+        mycombo = ttk.Combobox(wrapper, height = 15, values = cols_trans, width=30)
+        mycombo.current(0)
+        mycombo.grid(row = 0, column = 1)
 
         def selectcolumn():
             global select_trans_column
-            select_trans_column = mycombo2.get()
+            select_trans_column = mycombo.get()
             print(select_trans_column)
 
-        btn_selectData = tk.Button(wrapper2, text = "Select", command = selectcolumn)
-        btn_selectData.grid(row = 0, column = 2, padx = 5, pady = 5)
+        btn_selectcolumn = tk.Button(wrapper, text = "Select", command = selectcolumn)
+        btn_selectcolumn.grid(row = 0, column = 2, padx = 5, pady = 5)
+
+        def colOptions():
+            colName = mycombo.get()
+            self.options[colName] = [mycombo1.get()]
+            insertLog((dt.datetime.now(), colName, mycombo1.get()))
+            self.log.append((dt.datetime.now(), colName, mycombo1.get()))
+            
+        btnSaveOptions = tk.Button(wrapper2, text="Save Column Options", command=colOptions)
+        btnSaveOptions.grid(row = 4, column=0, padx=10, pady=10)
+
+
+
+
+
         def trans():
-            if(transformation_method=="StandardScaler"):
-                df['{}'.format(select_trans_column)] = def_StandardScaler(df, select_trans_column)
-                print(df)
-            elif(transformation_method=="MinMaxScaler"):
-                df['{}'.format(select_trans_column)] = def_MinMaxScaler(df, select_trans_column)
-                print(df)
-            elif(transformation_method=="MaxAbsScaler"):
-                df['{}'.format(select_trans_column)] = def_MaxAbsScaler(df, select_trans_column)
-                print(df)
-            elif(transformation_method=="RobustScaler"):
-                df['{}'.format(select_trans_column)] = def_RobustScaler(df, select_trans_column)
-                print(df)
-            else: pass
+            try:    
+                if(transformation_method=="StandardScaler"):
+                    df['{}'.format(select_trans_column)] = def_StandardScaler(df, select_trans_column)
+                    root.appendLog(self.processLog())
+                    root.pushStack(df)
+                    print(df)
+                    secces()
+                elif(transformation_method=="MinMaxScaler"):
+                    df['{}'.format(select_trans_column)] = def_MinMaxScaler(df, select_trans_column)
+                    root.appendLog(self.processLog())
+                    root.pushStack(df)
+                    print(df)
+                    secces()
+                elif(transformation_method=="MaxAbsScaler"):
+                    df['{}'.format(select_trans_column)] = def_MaxAbsScaler(df, select_trans_column)
+                    root.appendLog(self.processLog())
+                    root.pushStack(df)
+                    print(df)
+                    secces()
+                elif(transformation_method=="RobustScaler"):
+                    df['{}'.format(select_trans_column)] = def_RobustScaler(df, select_trans_column)
+                    root.appendLog(self.processLog())
+                    root.pushStack(df)
+                    print(df)
+                    secces()
+                else:
+                    pass
+            except:
+                warn()
 
-        def trans_help():
-            pass
+        btnOK = tk.Button(wrapper3, text = "OK", command= trans)
+        btnOK.pack()
 
-        btn_help = tk.Button(window, text = "help", command = trans_help)
-        btn_help.pack()
-
-        btn_selectData = tk.Button(window, text = "OK", command = trans)
-        btn_selectData.pack()
-        
 
         window.title("TransformationBox")
-        window.geometry("720x720")
+        window.geometry("900x350")
         window.resizable(False, False)
         window.mainloop()
-
-#t_box = TransformationBox()
-
+    def processLog(self):
+        log = []
+        for i in self.options.keys():
+            defaultOption = ['Default','column','method']
+            if self.options[i] != defaultOption:
+                log.append([dt.datetime.now(), i, self.options[i]])
+        return log

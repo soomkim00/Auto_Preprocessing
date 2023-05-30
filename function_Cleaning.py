@@ -19,19 +19,27 @@ def modType(column, option):
 
 
 def handleMissingVal(df, column, option):
+    print(column)
     if option == "Do Nothing":
         return df
     elif option == "Replacing With Mean":
-        df[column].fillna(column.mean(), inplace=True)
+        df[column].fillna(df[column].mean(), inplace=True)
         return df
     elif option == "Replacing With Median":
-        df[column].fillna(column.median(), inplace =True)
+        df[column].fillna(df[column].median(), inplace =True)
         return df
     elif option == "Forward Fill":
         df[column].ffill(axis = 0)
         return df
     elif option == "Drop Null Row":
-        df[column].dropna()
+        df.dropna(axis= 0, how='any',subset = [column] ,inplace = True)        
         return df
     else:
         return df
+
+import tkinter.messagebox as msgbox
+
+def secces():
+    msgbox.showinfo("알림", "정상적으로 처리 되었습니다.")
+def warn():
+    msgbox.showwarning("경고", "오류가 발생했습니다.")
